@@ -1,6 +1,7 @@
 var sql = require('mssql');
 const fs = require('fs');
-let table = require("table");
+const fastcsv = require("fast-csv");
+const ws = fs.createWriteStream("test.csv");
 var config = {
     user: "sa",
     password: "Mdsaad80@4345",
@@ -12,16 +13,6 @@ var config = {
     instanceName: "SQLEXPRESS"
     },
     };
-
-    config_tab = {
-  
-        // Predefined styles of table
-        border: table.getBorderCharacters("ramac"),
-      }
-        
-
-
-
 
 function loadEmployees() {
     //4.
@@ -43,7 +34,7 @@ function loadEmployees() {
             });
 
 */            
-            
+            const jsonData = JSON.parse(JSON.stringify(recordSet));
             fs.writeFile('sample.txt', JSON.stringify(recordSet),
             // callback function that is called after writing file is done
             function(err) {     
@@ -51,6 +42,14 @@ function loadEmployees() {
                 // if no error
                 console.log("Data is written to file successfully.")
             });
+
+
+            fastcsv
+            .write(jsonData, { headers: true })
+            .on("finish", function() {
+              console.log("Written to test.csv successfully!");
+            })
+            .pipe(ws);
 
             dbConn.close();
        }).catch(function (err) {

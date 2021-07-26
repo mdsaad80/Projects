@@ -19,7 +19,7 @@ function loadEmployees() {
         //6.
         var request = new sql.Request(dbConn);
         //7.
-        request.query("SELECT * FROM [saadDb].[dbo].[Employee]").then(function (recordSet) {
+        request.query("SELECT * FROM [saadDb].[dbo].[Employee").then(function (recordSet) {           //   or   "SELECT * FROM [saadDb].[dbo].[Employee"
             console.log(recordSet);
             console.log("Hello");
             dbConn.close();

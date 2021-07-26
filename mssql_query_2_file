@@ -1,0 +1,66 @@
+var sql = require('mssql');
+const fs = require('fs');
+let table = require("table");
+var config = {
+    user: "sa",
+    password: "Mdsaad80@4345",
+    database: "saadDb",
+    server: "localhost",
+    dialect: "mssql",
+    port: 1433,
+    dialectOptions: {
+    instanceName: "SQLEXPRESS"
+    },
+    };
+
+    config_tab = {
+  
+        // Predefined styles of table
+        border: table.getBorderCharacters("ramac"),
+      }
+        
+
+
+
+
+function loadEmployees() {
+    //4.
+    var dbConn = new sql.Connection(config);
+    //5.
+    dbConn.connect().then(function () {
+        //6.
+        var request = new sql.Request(dbConn);
+        //7.
+        request.query("SELECT * FROM [saadDb].[dbo].[Employee]").then(function (recordSet) {           //   or   "SELECT * FROM [saadDb].[dbo].[Employee"
+            console.log(recordSet);
+
+/*            fs.writeFile('sample.txt', x,
+            // callback function that is called after writing file is done
+            function(err) {     
+                if (err) throw err;
+                // if no error
+                console.log("Data is written to file successfully.")
+            });
+
+*/            
+            
+            fs.writeFile('sample.txt', JSON.stringify(recordSet),
+            // callback function that is called after writing file is done
+            function(err) {     
+                if (err) throw err;
+                // if no error
+                console.log("Data is written to file successfully.")
+            });
+
+            dbConn.close();
+       }).catch(function (err) {
+            //8.
+            console.log(err);
+        });
+    }).catch(function (err) {
+        //9.
+        console.log(err);
+    });
+}
+//10.
+loadEmployees();

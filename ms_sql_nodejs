@@ -1,0 +1,37 @@
+var sql = require('mssql');
+var config = {
+    user: "sa",
+    password: "Mdsaad80@4345",
+    database: "saadDb",
+    server: "localhost",
+    dialect: "mssql",
+    port: 1433,
+    dialectOptions: {
+    instanceName: "SQLEXPRESS"
+    },
+    };
+
+function loadEmployees() {
+    //4.
+    var dbConn = new sql.Connection(config);
+    //5.
+    dbConn.connect().then(function () {
+        //6.
+        var request = new sql.Request(dbConn);
+        //7.
+        request.query("SELECT * FROM [saadDb].[dbo].[Employee]").then(function (recordSet) {
+            console.log(recordSet);
+            console.log("Hello");
+            dbConn.close();
+        }).catch(function (err) {
+            //8.
+            console.log(err);
+            dbConn.close();
+        });
+    }).catch(function (err) {
+        //9.
+        console.log(err);
+    });
+}
+//10.
+loadEmployees();

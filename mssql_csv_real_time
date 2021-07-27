@@ -1,0 +1,78 @@
+var sql = require('mssql');
+const fs = require('fs');
+const fastcsv = require("fast-csv");
+const Json2csvParser = require("json2csv").Parser;
+const cron = require("node-cron");
+const ws = fs.createWriteStream("test.csv");
+var config = {
+    user: "sa",
+    password: "Mdsaad80@4345",
+    database: "saadDb",
+    server: "localhost",
+    dialect: "mssql",
+    port: 1433,
+    dialectOptions: {
+    instanceName: "SQLEXPRESS"
+    },
+    };
+
+cron.schedule("*/1 * * * *", function() {
+    loadEmployees();
+    });
+
+
+function loadEmployees() {
+    //4.
+    var dbConn = new sql.Connection(config);
+    //5.
+    dbConn.connect().then(function () {
+        //6.
+        var request = new sql.Request(dbConn);
+        //7.
+        request.query("SELECT * FROM [saadDb].[dbo].[Employee]").then(function (recordSet) {           //   or   "SELECT * FROM [saadDb].[dbo].[Employee"
+            console.log(recordSet);
+
+/*            fs.writeFile('sample.txt', x,
+            // callback function that is called after writing file is done
+            function(err) {     
+                if (err) throw err;
+                // if no error
+                console.log("Data is written to file successfully.")
+            });
+
+*/            
+            const jsonData = JSON.parse(JSON.stringify(recordSet));
+
+            fs.writeFile('sample.txt', JSON.stringify(recordSet),
+            // callback function that is called after writing file is done
+            function(err) {     
+                if (err) throw err;
+                // if no error
+                console.log("Data is written to file successfully.")
+            });
+
+            const json2csvParser = new Json2csvParser({ header: true});
+            const csv = json2csvParser.parse(jsonData);
+            fs.writeFile("test.csv", csv, function(error) {
+                if (error) throw error;
+                console.log("Write to test.csv successfully!");
+              });
+/*
+            fastcsv
+            .write(jsonData, { headers: true })
+            .on("finish", function() {
+              console.log("Written to test.csv successfully!");
+            })
+            .pipe(ws);
+*/
+            dbConn.close();
+       }).catch(function (err) {
+            //8.
+            console.log(err);
+        });
+    }).catch(function (err) {
+        //9.
+        console.log(err);
+    });
+}
+//10.
